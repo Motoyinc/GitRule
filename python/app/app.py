@@ -29,7 +29,7 @@ def task_status(task_id):
 
 @app.route('/update-pullRule', methods=['POST'])
 def update_pull_rule():
-    repo_url = "http://xxxxxxx/gitRule.git"
+    repo_url = "https://github.com/Motoyinc/gitRule.git"
     clone_path = "/Script/gitRule"
 
     if not os.path.exists(clone_path):
