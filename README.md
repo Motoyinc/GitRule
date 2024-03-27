@@ -1,37 +1,38 @@
-# 【GitRule App 部署指南】
+## GitRule App 部署指南
 
 此指南旨在帮助你在Linux服务器上部署GitRule应用。
 
-## 前提条件
+### 【前提条件】
 
 - 一个Linux服务器，Docker已安装在服务器上
 - GitLab中的Git Hooks功能已开启
-## 部署步骤
 
-### 开启Git Hooks ( gitlab16社区版 适用)
+### 【部署步骤】
 
-1. 如果你的gitlab是docker安装的，修改配置gitlab文件`gitlab.rb`,开启gitlab hook功能。
+#### 开启Git Hooks (适用于gitlab16社区版)
 
-    ```
+1. 如果你的GitLab是通过Docker安装的，请修改GitLab配置文件`gitlab.rb`以开启GitLab Hook功能。
+
+    ```bash
     docker exec -it <gitlab docker 容器名称> /bin/bash
     sudo vi /etc/gitlab/gitlab.rb
     ```
-    
-2. 找到`下面这两项将注释取消掉
-   
-    ```
+
+2. 找到以下内容并取消注释：
+
+    ```bash
     # gitaly['configuration'] = {
     ```
-    
-    > `custom_hooks_dir`后面的值就是全局的git hooks 地址 `/var/opt/gitlab/gitaly/custom_hooks'`
 
-    ```
+    ```bash
     # hooks: {
     # custom_hooks_dir: '/var/opt/gitlab/gitaly/custom_hooks',
     # },
     ```
-    > gitlab.rb 配置文件原文片段
-    ```
+
+    > 示例 `gitlab.rb` 配置文件片段：
+
+    ```bash
     # gitaly['consul_service_meta'] = {}
      gitaly['configuration'] = {
     #
@@ -43,43 +44,37 @@
         custom_hooks_dir: '/var/opt/gitlab/gitaly/custom_hooks',
     },
     ```
-4. 找到git hooks 存放位置
-   
-    > 找到gitaly的配置文件`config.toml` ,默认地址在`/var/opt/gitlab/gitaly`
-    
+
+3. 找到存放Git Hooks的位置：
+
+    找到Gitaly的配置文件`config.toml`，默认地址在`/var/opt/gitlab/gitaly`。
+
+    ```bash
+    sudo vi /var/opt/gitlab/gitaly/config.toml
     ```
-    sudo vi var/opt/gitlab/gitaly/config.toml
-    ```
-    
-    > 这个配置文件下[[storage]]项就是单个仓库的项目地址了,
-    >
-    > [hooks] 则是全局仓库hooks的位置 
-    
-    ```
+
+    在配置文件中，[[storage]]项代表单个仓库的项目地址，而[hooks]则是全局仓库hooks的位置。
+
+    ```bash
     [[storage]]
     name = "default"
     path = "/var/opt/gitlab/git-data/repositories"
-    
+
     [hooks]
     custom_hooks_dir = "/var/opt/gitlab/gitaly/custom_hooks"
     ```
 
-    > 
-    > `/var/opt/gitlab/git-data/repositories` + `相对路径` 就是单个仓库地址了
-    > 
-    > 例如 `/var/opt/gitlab/git-data/repositories/@hashed/d4/73/d47353d0c07d8b6c5f59718b9b51f90de3a2301965e16eee0a3a666ec13ab35.git`
-    > 
-    > 在这个文件夹下创建一个`custom_hooks`文件夹就可以了
-    >
-    
-    ```
-    root@0417cb5b47d7:/var/opt/gitlab/git-data/repositories/@hashed/d4/73/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35.git# sudo mkdir custom_hooks
-    ```
-    
+    比如，`/var/opt/gitlab/git-data/repositories` 加上相对路径就是单个仓库的地址。
 
-5. 将本仓库的`gitRule/custom_hooks`里的内容 拷贝到对应`custom_hooks`文件夹下即可。
+    创建一个`custom_hooks`文件夹：
 
-### 生成Web镜像
+    ```bash
+    sudo mkdir /var/opt/gitlab/git-data/repositories/@hashed/d4/73/d47353d0c07d8b6c5f59718b9b51f90de3a2301965e16eee0a3a666ec13ab35.git/custom_hooks
+    ```
+
+4. 将本仓库的`gitRule/custom_hooks`里的内容拷贝到对应的`custom_hooks`文件夹下即可。
+
+#### 生成Web镜像
 
 将`gitrule_app`文件夹拷贝到Linux服务器上。此文件夹应包含应用的所有代码和Dockerfile。
 
@@ -97,7 +92,7 @@
 
    这里，`gitrule_app_image`是镜像的名称，你可以根据需要命名。
 
-### 启动Web服务
+#### 启动Web服务
 
 启动前面创建的Docker镜像，并映射5000号端口到主机的一个可用端口。
 
@@ -115,7 +110,6 @@
 现在，GitRule应用应该已经在你的Linux服务器上成功部署，并通过映射的端口对外提供服务。确保GitLab服务器的钩子配置正确，以实现预期的集成效果。
 
 -----
-
 
 # 【功能说明】
 
