@@ -9,6 +9,8 @@ executor = Executor(app)  # 初始化Executor
 tasks = {}
 new_url = "https://github.com/Motoyinc/GitRule.git"
 remote_name = 'origin'
+
+
 @app.route('/pullRule/start', methods=['POST'])
 def execute_python_script():
     data = request.json
@@ -19,6 +21,7 @@ def execute_python_script():
     future.add_done_callback(lambda future: tasks.update({task_id: future.result()}))
     return jsonify({"task_id": task_id}), 202
 
+
 @app.route('/pullRule/checkStage/<task_id>', methods=['GET'])
 def task_status(task_id):
     if task_id in tasks:
@@ -28,6 +31,8 @@ def task_status(task_id):
             return jsonify(tasks[task_id]), 200
     else:
         return jsonify({"error": "Invalid task ID"}), 404
+
+
 def get_git_repo_path():
     try:
         # 使用git命令获取顶层仓库路径
@@ -62,7 +67,7 @@ def update_pull_rule():
     except subprocess.CalledProcessError as e:
         print(f"操作时出错: {e.output.decode()}")
         try:
-            subprocess.run(['git', 'clone',new_url, git_rule_path], check=True)
+            subprocess.run(['git', 'clone', new_url, git_rule_path], check=True)
         except subprocess.CalledProcessError as e:
             print(f"克隆仓库时出错：{e.output.decode()}")
         return jsonify({"error": "Operation failed"}), 500
@@ -71,6 +76,7 @@ def update_pull_rule():
         os.chdir(script_dir)
 
     return jsonify({"message": "gitRuleApp update succeed"}), 200
+
 
 def long_running_task(data, task_id):
     script_name = data.get("script_name", "default_script.py")
@@ -83,6 +89,7 @@ def long_running_task(data, task_id):
         output_data = {"error": "Execution failed", "details": str(e)}
         is_successful = False
     return {"is_successful": is_successful, "output_data": output_data}
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
