@@ -1,9 +1,5 @@
 #!/bin/bash
 
-
-
-#!/bin/bash
-
 GL_USERNAME="Motoyinc"
 GL_PROJECT_PATH="devgroup/SRPJ"
 L_ID="user-3"
