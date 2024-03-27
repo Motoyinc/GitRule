@@ -32,16 +32,16 @@
     ```
     > gitlab.rb 配置文件原文片段
     ```
-        # gitaly['consul_service_meta'] = {}
-         gitaly['configuration'] = {
-        #
-        #   ...
-        #   中间有一大段和本主题无关的内容
-        #   ...
-        #   
-           hooks: {
-             custom_hooks_dir: '/var/opt/gitlab/gitaly/custom_hooks',
-           },
+    # gitaly['consul_service_meta'] = {}
+     gitaly['configuration'] = {
+    #
+    #   ...
+    #   中间有一大段和本主题无关的内容
+    #   ...
+    #   
+        hooks: {
+        custom_hooks_dir: '/var/opt/gitlab/gitaly/custom_hooks',
+    },
     ```
 4. 找到git hooks 存放位置
    
@@ -131,17 +131,17 @@
 ## 端点说明
 
 - **启动检测**：
-  - **URL**：`http://192.168.1.30/pullRule/start`
+  - **URL**：`http://127.0.0.1/pullRule/start`
   - **方法**：POST
   - **功能**：接收推送任务信息，并启动检测过程。
 
 - **查询任务状态**：
-  - **URL**：`http://192.168.1.30/pullRule/checkStage/<task_id>`
+  - **URL**：`http://127.0.0.1/pullRule/checkStage/<task_id>`
   - **方法**：GET
   - **功能**：使用任务ID查询检测任务的执行状态，并获取结果。
 
 - **更新检测规则**：
-  - **URL**：`http://192.168.1.30/pullRule/appUpdate`
+  - **URL**：`http://127.0.0.1/pullRule/appUpdate`
   - **方法**：POST
   - **功能**：从`https://github.com/Motoyinc/gitRule.git` 拉取最新的检测规则到远端服务，确保检测使用的是最新规则。
 

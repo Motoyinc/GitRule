@@ -7,18 +7,19 @@ import uuid
 app = Flask(__name__)
 executor = Executor(app)  # 初始化Executor
 tasks = {}
-new_url = "https://github.com/Motoyinc/gitRule.git"
+new_url = "https://github.com/Motoyinc/GitRule.git"
 remote_name = 'origin'
-@app.route('/start-pullRule', methods=['POST'])
+@app.route('/pullRule/start', methods=['POST'])
 def execute_python_script():
     data = request.json
+    print(data)
     task_id = str(uuid.uuid4())
     future = executor.submit(long_running_task, data, task_id)
     tasks[task_id] = None  # 初始化任务状态
     future.add_done_callback(lambda future: tasks.update({task_id: future.result()}))
     return jsonify({"task_id": task_id}), 202
 
-@app.route('/checkStage-pullRule/<task_id>', methods=['GET'])
+@app.route('/pullRule/checkStage/<task_id>', methods=['GET'])
 def task_status(task_id):
     if task_id in tasks:
         if tasks[task_id] is None:
@@ -38,11 +39,11 @@ def get_git_repo_path():
 
 
 # 当前路径 /app/app.py
-@app.route('/update-pullRule', methods=['POST'])
+@app.route('/pullRule/update', methods=['POST'])
 def update_pull_rule():
     # 获取当前脚本的绝对路径
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    git_rule_path = os.path.join(script_dir, '../gitRule')  # 生成gitRule目录的绝对路径
+    git_rule_path = os.path.join(script_dir, '../GitRule')  # 生成GitRule目录的绝对路径
     os.makedirs(git_rule_path, exist_ok=True)  # 确保目录存在，如果不存在则创建
     try:
         # 切换到gitRule目录
@@ -56,9 +57,14 @@ def update_pull_rule():
             print("仓库已成功更新。")
         except subprocess.CalledProcessError as e:
             print(f"更新仓库时出错：{e.output.decode()}")
+
             return jsonify({"error": "Error pulling repository"}), 500
     except subprocess.CalledProcessError as e:
         print(f"操作时出错: {e.output.decode()}")
+        try:
+            subprocess.run(['git', 'clone',new_url, git_rule_path], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"克隆仓库时出错：{e.output.decode()}")
         return jsonify({"error": "Operation failed"}), 500
     finally:
         # 无论操作成功与否，都切换回脚本所在的原始目录

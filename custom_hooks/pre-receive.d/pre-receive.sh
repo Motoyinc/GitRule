@@ -2,7 +2,8 @@
 # 还没开始写，先放个测试用的脚本
 while read oldrev newrev refname; do
     branch=$(git rev-parse --symbolic --abbrev-ref $refname)
-    GITLAB_TOKEN="xxxxxxxx"
+    GITLAB_TOKEN=$gitlab_read_api_token
+    #GITLAB_API_TOKEN = $gitlab_api_token
     PROJECT_ID="2"
     ISSUES_URL="https://xxxxx/api/v4/projects/${PROJECT_ID}/issues"
     API_URL="https://xxxxx/api/v4/projects/${PROJECT_ID}"
