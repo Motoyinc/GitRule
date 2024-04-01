@@ -1,6 +1,7 @@
 import subprocess
 import os
 import uuid
+import json
 
 from flask import Flask, request, jsonify
 from flask_executor import Executor
@@ -91,6 +92,17 @@ def long_running_task(data, task_id):
         is_successful = False
     return {"is_successful": is_successful, "output_data": output_data}
 
+def get_config() -> dict:
+    filename = 'config.json'
+    data = dict()
+    with open(filename, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    return data
 
 if __name__ == '__main__':
+    current_file_path = os.path.abspath(__file__)
+    current_dir = os.path.dirname(current_file_path)
+    os.chdir(current_dir)
+
+    # print("Current working directory:", os.getcwd())
     app.run(host='0.0.0.0', port=5000)

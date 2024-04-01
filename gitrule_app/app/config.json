@@ -1,0 +1,8 @@
+{
+    "server_url": "http://localhost:8080/auth/",
+    "client_id": "example-client",
+    "realm_name": "example-realm",
+    "client_secret_key": "your-client-secret",
+    "username": "you_username",
+    "password": "you_password"
+}
