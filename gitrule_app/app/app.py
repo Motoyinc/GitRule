@@ -2,6 +2,7 @@ import subprocess
 import os
 import uuid
 import json
+import time
 
 from flask import Flask, request, jsonify
 from flask_executor import Executor
@@ -14,24 +15,34 @@ remote_name = 'origin'
 
 
 @app.route('/pullRule/start', methods=['POST'])
-def execute_python_script():
+def start_push_rush():
     data = request.json
     print(data)
     task_id = str(uuid.uuid4())
-    future = executor.submit(long_running_task, data, task_id)
+    future = executor.submit(task_push_rush, data, task_id)
     tasks[task_id] = None  # 初始化任务状态
     future.add_done_callback(lambda future: tasks.update({task_id: future.result()}))
     return jsonify({"task_id": task_id}), 202
 
 
+def task_push_rush(data, task_id):
+    print("获取到数据", data)
+    time.sleep(6)
+    return 112233
+
+
 @app.route('/pullRule/checkStage/<task_id>', methods=['GET'])
 def task_status(task_id):
+    print(tasks[task_id])
     if task_id in tasks:
         if tasks[task_id] is None:
+            print("任务进行中")
             return jsonify({"status": "running"}), 202
         else:
+            print("任务完成")
             return jsonify(tasks[task_id]), 200
     else:
+        print("任务不存在")
         return jsonify({"error": "Invalid task ID"}), 404
 
 
@@ -92,12 +103,14 @@ def long_running_task(data, task_id):
         is_successful = False
     return {"is_successful": is_successful, "output_data": output_data}
 
+
 def get_config() -> dict:
     filename = 'config.json'
     data = dict()
     with open(filename, 'r', encoding='utf-8') as f:
         data = json.load(f)
     return data
+
 
 if __name__ == '__main__':
     current_file_path = os.path.abspath(__file__)
