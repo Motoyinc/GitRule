@@ -148,7 +148,7 @@
 ## 为windows安装jp
 
 - **简介**：在linux上测试代码感觉不是很方便，因此提供windows测试环境的办法
-  - **下载 jp.exe**：`https://jqlang.github.io/jq/download/`
+  - **下载 jp.exe**：[https://jqlang.github.io/jq/download/](https://jqlang.github.io/jq/download/)
   - **选择对应版本**：【jq xx.xx.xx executables for AMD64 or i386.】 AMD64是windows 64位系统 i386是windowsx86系统（32位）
   - **保存 jp.exe**：为了方便，我将jp和git放在了一起 `D:\Program Files\Git\mingw64\bin`
   - **启用 jp.exe**： 在git中执行这段命令`alias jq="D:/Program\ Files/Git/mingw64/bin/jq-windows-amd64.exe"`
