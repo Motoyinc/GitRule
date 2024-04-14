@@ -139,3 +139,24 @@
   - **方法**：POST
   - **功能**：从`https://github.com/Motoyinc/gitRule.git` 拉取最新的检测规则到远端服务，确保检测使用的是最新规则。
 
+-----
+
+# 【配置必要环境】
+
+我在测试Web服务时通常是在windows环境下进行测试的，但是windows下默认的 git bash 命令没有jp指令，而该web应用又依赖jp进行解析，所以本章介绍如何安装jp命令。
+
+## 为windows安装jp
+
+- **简介**：在linux上测试代码感觉不是很方便，因此提供windows测试环境的办法
+  - **下载 jp.exe**：`https://jqlang.github.io/jq/download/`
+  - **选择对应版本**：【jq xx.xx.xx executables for AMD64 or i386.】 AMD64是windows 64位系统 i386是windowsx86系统（32位）
+  - **保存 jp.exe**：为了方便，我将jp和git放在了一起 `D:\Program Files\Git\mingw64\bin`
+  - **启用 jp.exe**： 在git中执行这段命令`alias jq="D:/Program\ Files/Git/mingw64/bin/jq-windows-amd64.exe"`
+  - **测试 jp.exe**: 执行`jq --version` 如果返回了jq版本号就表面jp执行正常
+
+## 为linux安装jp
+- **简介**：实际的运行环境是在linux上，因此linux上也需要安装jp环境，官网提供的gitlab docker镜像可以直接执行apt命令
+    ```bash
+    sudo apt update
+    sudo apt install jq
+    ```
