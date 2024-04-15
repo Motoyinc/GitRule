@@ -142,21 +142,50 @@
 -----
 
 # 【配置必要环境】
-
-我在测试Web服务时通常是在windows环境下进行测试的，但是windows下默认的 git bash 命令没有jp指令，而该web应用又依赖jp进行解析，所以本章介绍如何安装jp命令。
+# 为git-bash配置jp命令
+为了确保开发和测试的便捷性，本文档主要介绍如何在Windows环境下配置`jp`（jq）命令，以及在Linux环境下安装jq。`jp`是`jq`的一个别名，jq是一款轻量级且灵活的命令行JSON处理器。
 
 ## 为windows安装jp
 
-- **简介**：在linux上测试代码感觉不是很方便，因此提供windows测试环境的办法
-  - **下载 jp.exe**：[https://jqlang.github.io/jq/download/](https://jqlang.github.io/jq/download/)
-  - **选择对应版本**：【jq xx.xx.xx executables for AMD64 or i386.】 AMD64是windows 64位系统 i386是windowsx86系统（32位）
-  - **保存 jp.exe**：为了方便，我将jp和git放在了一起 `D:\Program Files\Git\mingw64\bin`
-  - **启用 jp.exe**： 在git中执行这段命令`alias jq="D:/Program\ Files/Git/mingw64/bin/jq-windows-amd64.exe"`
-  - **测试 jp.exe**: 执行`jq --version` 如果返回了jq版本号就表面jp执行正常
+1. **简介**：由于在Linux上测试代码可能不太方便，我们需要在Windows环境中设置测试环境。
+
+2. **下载 jp.exe**：
+   - 访问[jq官方下载页面](https://stedolan.github.io/jq/download/)以获取jq的Windows版本。
+   - 直接点击链接 [https://jqlang.github.io/jq/download/](https://jqlang.github.io/jq/download/) 下载`jp.exe`文件。
+
+3. **选择对应版本**：
+   - 查找并下载适用于你的系统架构的jq可执行文件。
+   - AMD64适用于Windows 64位系统。
+   - i386适用于Windows 32位系统（x86）。
+
+4. **保存 jp.exe**：
+   - 为了方便使用，建议将`jp.exe`文件保存到git的安装目录下的`bin`文件夹中，例如：`D:\Program Files\Git\mingw64\bin`。
+
+5. **启用 jp.exe**：
+   - 在git bash中执行以下命令来设置`jp`别名：
+     ```bash
+     alias jq="D:/Program\ Files/Git/mingw64/bin/jq-windows-amd64.exe"
+     ```
+   - 注意路径中的空格需要使用`\`进行转义。
+
+6. **测试 jp.exe**：
+   - 执行以下命令测试`jp`是否配置成功：
+     ```bash
+     jq --version
+     ```
+   - 如果返回了jq的版本号，则表示`jp`已经可以在git bash中正常使用。
+
 
 ## 为linux安装jp
-- **简介**：实际的运行环境是在linux上，因此linux上也需要安装jp环境，官网提供的gitlab docker镜像可以直接执行apt命令
-    ```bash
-    sudo apt update
-    sudo apt install jq
-    ```
+
+1. **简介**：由于最终的运行环境通常是Linux，因此在Linux上也需要安装jq。
+
+2. **安装jq**：
+   - 使用以下命令更新软件包列表并安装jq：
+     ```bash
+     sudo apt update
+     sudo apt install jq
+     ```
+   - 这些命令适用于基于Debian的发行版，如Ubuntu。其他发行版可能需要使用不同的包管理器，如`yum`或`zypper`。
+
+通过以上步骤，你应该已经在Windows和Linux环境中成功配置了`jp`命
