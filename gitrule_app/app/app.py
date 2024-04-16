@@ -2,7 +2,6 @@ import subprocess
 import os
 import uuid
 import json
-import time
 
 from flask import Flask, request, jsonify
 from flask_executor import Executor

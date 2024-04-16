@@ -32,7 +32,7 @@ CHECK_INTERVAL=2
 # 启动任务并获取任务ID
 echo "正在向服务器汇报git-push信息"
 response=$(curl -X POST -H "Content-Type: application/json" -d "$JSON_DATA" "$START_ENDPOINT")
-task_id=$(echo $response | jq -r '.task_id')
+task_id=$(echo "$response" | jq -r '.task_id')
 
 echo "服务器正在查询用户权限"
 echo "Response from server: $response"
@@ -42,13 +42,14 @@ echo "正在查询服务器权限，查询上限[$CHECK_MAX_COUNT],查询间隔[
 
 while [ $CHECK_COUNT -lt $CHECK_MAX_COUNT ]; do
     # 轮询计数
+    # shellcheck disable=SC2004
     CHECK_COUNT=$(($CHECK_COUNT + 1))
     echo "第[$CHECK_COUNT]次 查询权限"
 
     # 检查任务状态
     status_response=$(curl -s "$CHECK_ENDPOINT/$task_id")
-    status=$(echo $status_response | jq -r '.status')
-    echo $status_response
+    status=$(echo "$status_response" | jq -r '.status')
+    echo "$status_response"
 
     if [ "$status" == "completed" ]; then
         echo "Task completed successfully."
@@ -77,15 +78,15 @@ done
 
 
 # 解析 task 数组
-task=$(echo $status_response | jq -r '.task')
+sever_task=$(echo "$status_response" | jq -r '.task')
 
 # 遍历 task 数组中的消息
-echo $task | jq -c -r '.[1:][]' | while IFS= read -r remote_message; do
+echo "$sever_task" | jq -c -r '.[1:][]' | while IFS= read -r remote_message; do
     echo "$remote_message"
 done
 
 # 获取第一个元素来决定是否允许上传
-allow_push=$(echo $task | jq -r '.[0]')
+allow_push=$(echo "$sever_task" | jq -r '.[0]')
 
 # 判断是否允许上传
 if [ "$allow_push" == "true" ]; then
