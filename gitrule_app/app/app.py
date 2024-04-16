@@ -27,8 +27,21 @@ def start_push_rush():
 
 def task_push_rush(data, task_id):
     print("获取到数据", data)
-    time.sleep(6)
-    return 112233
+
+    # 上传权限设置
+    allow_push = True
+    # True时，允许上传
+    # False时，拒绝上传
+
+    # 服务器消息
+    i1 = u"[info] 1 info"
+    i2 = u"[info] 2 info"
+    i3 = u"[info] 3 info"
+
+    # sever_data后面的原始，用来输出服务器消息，字符串格式即可
+    sever_data = [allow_push, i1, i2, i3]
+
+    return sever_data
 
 
 @app.route('/pullRule/checkStage/<task_id>', methods=['GET'])
@@ -40,10 +53,10 @@ def task_status(task_id):
             return jsonify({"status": "running"}), 202
         else:
             print("任务完成")
-            return jsonify(tasks[task_id]), 200
+            return jsonify({"status": "completed", "task": tasks[task_id]}), 200
     else:
         print("任务不存在")
-        return jsonify({"error": "Invalid task ID"}), 404
+        return jsonify({"status": "error", "error": "Invalid task ID"}), 404
 
 
 def get_git_repo_path():
