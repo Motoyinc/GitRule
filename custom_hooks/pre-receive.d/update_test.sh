@@ -31,9 +31,21 @@ CHECK_INTERVAL=2
 
 commit_message="#114514 Edit-Wip(Art): 角色模型"
 
-# 正则表达式初步判断提交信息是否规范
-pattern='^#[0-9]+ [A-Za-z]+-[A-Za-z]+\([A-Za-z]+\): .+$'
-if ! [[ $commit_message =~ $pattern ]]; then
+# 正则表达式初步判断提交信息是否规范，并包括捕获组以便提取详细信息
+pattern='^#([0-9]+) ([A-Za-z]+)-([A-Za-z]+)\(([A-Za-z]+)\): (.+)$'
+if [[ $commit_message =~ $pattern ]]; then
+    echo "Message: 规范化检查通过！！！"
+    issue_id="${BASH_REMATCH[1]}"
+    edit_type="${BASH_REMATCH[2]}"
+    edit_status="${BASH_REMATCH[3]}"
+    user_role="${BASH_REMATCH[4]}"
+    description="${BASH_REMATCH[5]}"
+    echo "单号 issue id: $issue_id"
+    echo "编辑类型 Edit Type: $edit_type"
+    echo "编辑状态 Edit Status: $edit_status"
+    echo "用户角色 User Role: $user_role"
+    echo "描述 Description: $description"
+else
     echo "ERROR: "
     echo "ERROR: ！！！！！！规范化检查大失败！！！！！！"
     echo "ERROR: 请按以下规范化格式提交"
@@ -48,8 +60,6 @@ if ! [[ $commit_message =~ $pattern ]]; then
     echo "ERROR: "
     echo "ERROR: ======================"
     echo "ERROR: "
-else
-    echo "Massage: 规范化检查通过！！！"
 fi
 
 # 启动任务并获取任务ID
