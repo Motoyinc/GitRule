@@ -29,21 +29,23 @@ CHECK_COUNT=0
 CHECK_MAX_COUNT=20
 CHECK_INTERVAL=2
 
-commit_message="#114514 Edit-Wip(Art): 角色模型"
+commit_message="#114514 Edit-Wip(Art) N : 角色模型"
 
 # 正则表达式初步判断提交信息是否规范，并包括捕获组以便提取详细信息
-pattern='^#([0-9]+) ([A-Za-z]+)-([A-Za-z]+)\(([A-Za-z]+)\): (.+)$'
+pattern='^#([0-9]+) ([A-Za-z]+)-([A-Za-z]+)\(([A-Za-z]+)\) ([A-Za-z,]+) : (.+)$'
 if [[ $commit_message =~ $pattern ]]; then
     echo "Message: 规范化检查通过！！！"
     issue_id="${BASH_REMATCH[1]}"
     edit_type="${BASH_REMATCH[2]}"
     edit_status="${BASH_REMATCH[3]}"
     user_role="${BASH_REMATCH[4]}"
-    description="${BASH_REMATCH[5]}"
-    echo "单号 issue id: $issue_id"
+    push_cmd="${BASH_REMATCH[5]}"
+    description="${BASH_REMATCH[6]}"
+    echo "单号 Issue id: $issue_id"
     echo "编辑类型 Edit Type: $edit_type"
     echo "编辑状态 Edit Status: $edit_status"
     echo "用户角色 User Role: $user_role"
+    echo "上传命令 Push cmd: $push_cmd"   # 【上传命令 Push cmd】 用于在上传后由CICD根据上传的文件哈希值创建一个时间戳证书
     echo "描述 Description: $description"
 else
     echo "ERROR: "
@@ -53,10 +55,10 @@ else
     echo "ERROR: ======================"
     echo "ERROR: "
     echo "ERROR: 格式："
-    echo "ERROR: #<单号><编辑类型>-<编辑状态>(<用户角色>): <描述>"
+    echo "ERROR: #<单号> <编辑类型>-<编辑状态>(<用户角色>) <上传命令>: <描述>"
     echo "ERROR: "
     echo "ERROR: 示例："
-    echo "ERROR: #114514 Edit-Wip(Art): 角色需求模型"
+    echo "ERROR: #114514 Edit-Wip(Art) NONE: 角色需求模型"
     echo "ERROR: "
     echo "ERROR: ======================"
     echo "ERROR: "
