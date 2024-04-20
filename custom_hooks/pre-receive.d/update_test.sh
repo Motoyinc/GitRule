@@ -29,6 +29,29 @@ CHECK_COUNT=0
 CHECK_MAX_COUNT=20
 CHECK_INTERVAL=2
 
+commit_message="#114514 Edit-Wip(Art): 角色模型"
+
+# 正则表达式初步判断提交信息是否规范
+pattern='^#[0-9]+ [A-Za-z]+-[A-Za-z]+\([A-Za-z]+\): .+$'
+if ! [[ $commit_message =~ $pattern ]]; then
+    echo "ERROR: "
+    echo "ERROR: ！！！！！！规范化检查大失败！！！！！！"
+    echo "ERROR: 请按以下规范化格式提交"
+    echo "ERROR: "
+    echo "ERROR: ======================"
+    echo "ERROR: "
+    echo "ERROR: 格式："
+    echo "ERROR: #<单号><编辑类型>-<编辑状态>(<用户角色>): <描述>"
+    echo "ERROR: "
+    echo "ERROR: 示例："
+    echo "ERROR: #114514 Edit-Wip(Art): 角色需求模型"
+    echo "ERROR: "
+    echo "ERROR: ======================"
+    echo "ERROR: "
+else
+    echo "Massage: 规范化检查通过！！！"
+fi
+
 # 启动任务并获取任务ID
 echo "正在向服务器汇报git-push信息"
 response=$(curl -X POST -H "Content-Type: application/json" -d "$JSON_DATA" "$START_ENDPOINT")
