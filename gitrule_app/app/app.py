@@ -26,6 +26,8 @@ def start_push_rush():
 
 def task_push_rush(data, task_id):
     print("获取到数据", data)
+    for d in data:
+        print(d)
 
     # 上传权限设置
     allow_push = True
