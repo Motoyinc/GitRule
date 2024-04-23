@@ -3,13 +3,17 @@ locale
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
+
 # 加载配置文件
 config_file="config.json"
 
 
 # 检查是否启用脚本
 CHECK_SEVER_ENABLE=$(jq -r '.CHECK_SEVER_ENABLE' $config_file)
-if [[ $CHECK_SEVER_ENABLE == false ]]; then
+if [[ $CHECK_SEVER_ENABLE == true ]]; then
+  ehco "检查服务已启用"
+else
+  ehco "检查服务已关闭"
   exit 0
 fi
 
@@ -91,6 +95,8 @@ fi
 #Edit-Wip
 #Edit-Done
 
+
+# 打包检查服务器的所需的信息
 # 测试用，从Gitlab获取的信息
 GL_USERNAME="Motoyinc"
 GL_PROJECT_PATH="devgroup/SRPJ"
@@ -99,28 +105,29 @@ GL_REPOSITORY="project-2"
 JSON_DATA="{\"username\":\"$GL_USERNAME\", \"project_path\":\"$GL_PROJECT_PATH\", \"id\":\"$L_ID\", \"repository\":\"$GL_REPOSITORY\"}"
 
 
-# 启动任务并获取任务ID
+# 启动检查服务器应用
 echo "正在向服务器汇报git-push信息"
 response=$(curl -X POST -H "Content-Type: application/json" -d "$JSON_DATA" "$START_ENDPOINT")
 task_id=$(echo "$response" | jq -r '.task_id')
 
+
+# 轮询检查服务器应用
 echo "服务器正在查询用户权限"
 echo "Response from server: $response"
 echo "Task started with ID: $task_id"
-
 echo "正在查询服务器权限，查询上限[$CHECK_MAX_COUNT],查询间隔[$CHECK_INTERVAL]s"
-
 while [ $CHECK_COUNT -lt $CHECK_MAX_COUNT ]; do
+
     # 轮询计数
-    # shellcheck disable=SC2004
     CHECK_COUNT=$(($CHECK_COUNT + 1))
     echo "第[$CHECK_COUNT]次 查询权限"
 
-    # 检查任务状态
+    # 触发轮询
     status_response=$(curl -s "$CHECK_ENDPOINT/$task_id")
     status=$(echo "$status_response" | jq -r '.status')
     echo "$status_response"
 
+    # 检查轮询状态
     if [ "$status" == "completed" ]; then
         echo "Task completed successfully."
         break
@@ -128,17 +135,15 @@ while [ $CHECK_COUNT -lt $CHECK_MAX_COUNT ]; do
         echo "Task is still running..."
     elif [ "$status" == "error" ]; then
         echo "Error Invalid task ID： $task_id"
-        sleep 3
         exit 1
     else
         echo "Error or unknown status."
-        sleep 3
         exit 1
     fi
 
+    # 检查轮询次数
     if [ $CHECK_COUNT == $CHECK_MAX_COUNT ];then
         echo "已达到查询次数上限[$CHECK_MAX_COUNT]，push终止。"
-        sleep 3
         exit 1
     fi
 
@@ -147,18 +152,15 @@ while [ $CHECK_COUNT -lt $CHECK_MAX_COUNT ]; do
 done
 
 
-# 解析 task 数组
+# 输出服务器消息
 sever_task=$(echo "$status_response" | jq -r '.task')
-
-# 遍历 task 数组中的消息
 echo "$sever_task" | jq -c -r '.[1:][]' | while IFS= read -r remote_message; do
     echo "$remote_message"
 done
 
-# 获取第一个元素来决定是否允许上传
-allow_push=$(echo "$sever_task" | jq -r '.[0]')
 
-# 判断是否允许上传
+# 检查服务器返回的结果
+allow_push=$(echo "$sever_task" | jq -r '.[0]')
 if [ "$allow_push" == "true" ]; then
     echo "允许上传"
     sleep 5
