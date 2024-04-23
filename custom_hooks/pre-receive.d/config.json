@@ -1,0 +1,8 @@
+{
+    "CHECK_SEVER_ENABLE": true,
+    "CHECK_MAX_COUNT": 20,
+    "CHECK_INTERVAL": 2,
+    "CHECK_SEVER_URL": "http://127.0.0.1:5000",
+    "CHECK_SEVER_START": "pullRule/start",
+    "CHECK_SEVER_CHECK_STAGE": "pullRule/checkStage"
+}

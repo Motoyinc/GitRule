@@ -1,52 +1,59 @@
 #!/bin/bash
-# 查看当前locale设置
 locale
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-
-# 测试用，从Gitlab获取的信息
-GL_USERNAME="Motoyinc"
-GL_PROJECT_PATH="devgroup/SRPJ"
-L_ID="user-3"
-GL_REPOSITORY="project-2"
-JSON_DATA="{\"username\":\"$GL_USERNAME\", \"project_path\":\"$GL_PROJECT_PATH\", \"id\":\"$L_ID\", \"repository\":\"$GL_REPOSITORY\"}"
+# 加载配置文件
+config_file="config.json"
 
 
-## 更新规则请求
-#curl -X POST  http://127.0.0.1:5000/pullRule/update
-#
-## 发生数据请求
-#curl -X POST -H "Content-Type: application/json" -d "$JSON_DATA" http://127.0.0.1:5000/pullRule/start
-#curl -X POST -H "Content-Type: application/json" -d '{"key1":"value1", "key2":"value2"}' http://127.0.0.1:5000/pullRule/start
+# 检查是否启用脚本
+CHECK_SEVER_ENABLE=$(jq -r '.CHECK_SEVER_ENABLE' $config_file)
+if [[ $CHECK_SEVER_ENABLE == false ]]; then
+  exit 0
+fi
+
 
 # 基础参数
-START_ENDPOINT="http://127.0.0.1:5000/pullRule/start"
-CHECK_ENDPOINT="http://127.0.0.1:5000/pullRule/checkStage"
+CHECK_SEVER_URL=$(jq -r '.CHECK_SEVER_URL' $config_file)
+CHECK_SEVER_START=$(jq -r '.CHECK_SEVER_START' $config_file)
+CHECK_SEVER_CHECK_STAGE=$(jq -r '.CHECK_SEVER_CHECK_STAGE' $config_file)
+START_ENDPOINT="$CHECK_SEVER_URL/$CHECK_SEVER_START"
+CHECK_ENDPOINT="$CHECK_SEVER_URL/$CHECK_SEVER_CHECK_STAGE"
 
 
+# 脚本最大运行次数、时长
 CHECK_COUNT=0
-CHECK_MAX_COUNT=20
-CHECK_INTERVAL=2
+CHECK_MAX_COUNT=$(jq -r '.CHECK_MAX_COUNT' $config_file)
+CHECK_INTERVAL=$(jq -r '.CHECK_INTERVAL' $config_file)
 
-commit_message="#114514 Edit-Wip(Art) N : 角色模型"
 
-# 正则表达式初步判断提交信息是否规范，并包括捕获组以便提取详细信息
-pattern='^#([0-9]+) ([A-Za-z]+)-([A-Za-z]+)\(([A-Za-z]+)\) ([A-Za-z,]+) : (.+)$'
+# push信息预处理
+commit_message="#114514  Edit-Wip(Art) NONE : 角色模型"
+commit_message_format=false
+pattern='^#([0-9]+)[[:space:]]+([A-Za-z]+)-([A-Za-z]+)\(([A-Za-z]+)\)[[:space:]]+([A-Za-z,]+)[[:space:]]*:[[:space:]]*(.+)$'
 if [[ $commit_message =~ $pattern ]]; then
-    echo "Message: 规范化检查通过！！！"
+    commit_message_format=true
     issue_id="${BASH_REMATCH[1]}"
     edit_type="${BASH_REMATCH[2]}"
     edit_status="${BASH_REMATCH[3]}"
     user_role="${BASH_REMATCH[4]}"
     push_cmd="${BASH_REMATCH[5]}"
     description="${BASH_REMATCH[6]}"
-    echo "单号 Issue id: $issue_id"
-    echo "编辑类型 Edit Type: $edit_type"
-    echo "编辑状态 Edit Status: $edit_status"
-    echo "用户角色 User Role: $user_role"
-    echo "上传命令 Push cmd: $push_cmd"   # 【上传命令 Push cmd】 用于在上传后由CICD根据上传的文件哈希值创建一个时间戳证书
-    echo "描述 Description: $description"
+    echo "Message: "
+    echo "Message: ！！！！！！规范化检查通过！！！！！！"
+    echo "Message: "
+    echo "Message: ======================"
+    echo "Message: "
+    echo "Message: 单号 Issue id: $issue_id"
+    echo "Message: 编辑类型 Edit Type: $edit_type"
+    echo "Message: 编辑状态 Edit Status: $edit_status"
+    echo "Message: 用户角色 User Role: $user_role"
+    echo "Message: 上传命令 Push cmd: $push_cmd"   # 【上传命令 Push cmd】 用于在上传后由CICD根据上传的文件哈希值创建一个时间戳证书
+    echo "Message: 描述 Description: $description"
+    echo "Message: "
+    echo "Message: ======================"
+    echo "Message: "
 else
     echo "ERROR: "
     echo "ERROR: ！！！！！！规范化检查大失败！！！！！！"
@@ -62,7 +69,35 @@ else
     echo "ERROR: "
     echo "ERROR: ======================"
     echo "ERROR: "
+    commit_message_format=false
 fi
+
+### 常用的<编辑类型>
+## 美术需求
+#Edit-Wip
+#Edit-Done
+#Fix-Wip
+#Fix-Done
+
+## 代码需求
+#Feat-Wip
+#Feat-Done
+#Refactor-Wip
+#Refactor-Done
+#Fix-Wip
+#Fix-Done
+
+## 通用需求
+#Edit-Wip
+#Edit-Done
+
+# 测试用，从Gitlab获取的信息
+GL_USERNAME="Motoyinc"
+GL_PROJECT_PATH="devgroup/SRPJ"
+L_ID="user-3"
+GL_REPOSITORY="project-2"
+JSON_DATA="{\"username\":\"$GL_USERNAME\", \"project_path\":\"$GL_PROJECT_PATH\", \"id\":\"$L_ID\", \"repository\":\"$GL_REPOSITORY\"}"
+
 
 # 启动任务并获取任务ID
 echo "正在向服务器汇报git-push信息"
