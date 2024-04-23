@@ -10,7 +10,10 @@ config_file="config.json"
 
 # 检查是否启用脚本
 CHECK_SEVER_ENABLE=$(jq -r '.CHECK_SEVER_ENABLE' $config_file)
-if [[ $CHECK_SEVER_ENABLE == false ]]; then
+if [[ $CHECK_SEVER_ENABLE == true ]]; then
+  ehco "检查服务已启用"
+else
+  ehco "检查服务已关闭"
   exit 0
 fi
 
